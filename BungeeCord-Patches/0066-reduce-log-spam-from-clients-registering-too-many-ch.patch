@@ -1,7 +1,7 @@
 From 89a9c3c9f0136f173f045385925357b6d9a9bc9b Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Fri, 21 Apr 2023 15:32:33 +0100
-Subject: [PATCH] reduce log spam from clients registeirng too many channels
+Subject: [PATCH] reduce log spam from clients registering too many channels
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
