@@ -1,4 +1,4 @@
-From 2ec957b0ea78ef67617a5c1c41ea13bf7a138443 Mon Sep 17 00:00:00 2001
+From 83af30c407017a938ffaad29767edad2831e7105 Mon Sep 17 00:00:00 2001
 From: Minecrell <minecrell@minecrell.net>
 Date: Fri, 22 Sep 2017 12:46:47 +0200
 Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
@@ -6,7 +6,7 @@ Subject: [PATCH] Use Log4j2 for logging and TerminalConsoleAppender for
 
 
 diff --git a/bootstrap/pom.xml b/bootstrap/pom.xml
-index fc09cc11..7fbac761 100644
+index 15546f07..5182b664 100644
 --- a/bootstrap/pom.xml
 +++ b/bootstrap/pom.xml
 @@ -49,6 +49,9 @@
@@ -233,7 +233,7 @@ index 00000000..cfd039cd
 +    </Loggers>
 +</Configuration>
 diff --git a/pom.xml b/pom.xml
-index 3e08cb3c..0c04b87a 100644
+index 58367c45..001f0ae2 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -55,12 +55,13 @@
@@ -253,10 +253,10 @@ index 3e08cb3c..0c04b87a 100644
      </modules>
  
 diff --git a/proxy/pom.xml b/proxy/pom.xml
-index 18a5c526..9be9aa22 100644
+index 216e894e..95703fee 100644
 --- a/proxy/pom.xml
 +++ b/proxy/pom.xml
-@@ -71,7 +71,7 @@
+@@ -83,7 +83,7 @@
          </dependency>
          <dependency>
              <groupId>io.github.waterfallmc</groupId>
@@ -265,7 +265,7 @@ index 18a5c526..9be9aa22 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -93,12 +93,13 @@
+@@ -105,12 +105,13 @@
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
@@ -280,7 +280,7 @@ index 18a5c526..9be9aa22 100644
          <dependency>
              <groupId>net.sf.jopt-simple</groupId>
              <artifactId>jopt-simple</artifactId>
-@@ -130,6 +131,35 @@
+@@ -142,6 +143,35 @@
              <version>1.9.18</version>
              <scope>runtime</scope>
          </dependency>
@@ -362,7 +362,7 @@ index 00000000..765d24bc
 +
 +}
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index 06842eb1..d60bdeb0 100644
+index 7e2688ee..066e740d 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 @@ -48,7 +48,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -373,7 +373,7 @@ index 06842eb1..d60bdeb0 100644
  import lombok.Getter;
  import lombok.Setter;
  import lombok.Synchronized;
-@@ -81,15 +80,11 @@ import net.md_5.bungee.command.CommandEnd;
+@@ -83,15 +82,11 @@ import net.md_5.bungee.command.CommandEnd;
  import net.md_5.bungee.command.CommandIP;
  import net.md_5.bungee.command.CommandPerms;
  import net.md_5.bungee.command.CommandReload;
@@ -389,7 +389,7 @@ index 06842eb1..d60bdeb0 100644
  import net.md_5.bungee.module.ModuleManager;
  import net.md_5.bungee.netty.PipelineUtils;
  import net.md_5.bungee.protocol.DefinedPacket;
-@@ -98,8 +93,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
+@@ -100,8 +95,6 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
  import net.md_5.bungee.query.RemoteQuery;
  import net.md_5.bungee.scheduler.BungeeScheduler;
  import net.md_5.bungee.util.CaseInsensitiveMap;
@@ -398,7 +398,7 @@ index 06842eb1..d60bdeb0 100644
  
  /**
   * Main BungeeCord proxy class.
-@@ -159,8 +152,12 @@ public class BungeeCord extends ProxyServer
+@@ -161,8 +154,12 @@ public class BungeeCord extends ProxyServer
      private final File pluginsFolder = new File( "plugins" );
      @Getter
      private final BungeeScheduler scheduler = new BungeeScheduler();
@@ -411,7 +411,7 @@ index 06842eb1..d60bdeb0 100644
      @Getter
      private final Logger logger;
      public final Gson gson = new GsonBuilder()
-@@ -204,6 +201,8 @@ public class BungeeCord extends ProxyServer
+@@ -207,6 +204,8 @@ public class BungeeCord extends ProxyServer
          // BungeeCord. This version is only used when extracting the libraries to their temp folder.
          System.setProperty( "library.jansi.version", "BungeeCord" );
  
@@ -420,7 +420,7 @@ index 06842eb1..d60bdeb0 100644
          AnsiConsole.systemInstall();
          consoleReader = new ConsoleReader();
          consoleReader.setExpandEvents( false );
-@@ -228,6 +227,9 @@ public class BungeeCord extends ProxyServer
+@@ -231,6 +230,9 @@ public class BungeeCord extends ProxyServer
          // since it applies a nice looking format and also writes to the logfile.
          System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
          System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
@@ -430,7 +430,7 @@ index 06842eb1..d60bdeb0 100644
  
          pluginManager = new PluginManager( this );
          getPluginManager().registerCommand( null, new CommandReload() );
-@@ -504,10 +506,7 @@ public class BungeeCord extends ProxyServer
+@@ -507,10 +509,7 @@ public class BungeeCord extends ProxyServer
  
          getLogger().info( "Thank you and goodbye" );
          // Need to close loggers after last message!
@@ -561,7 +561,7 @@ index 7e465924..00000000
 -</project-shared-configuration>
 diff --git a/slf4j/pom.xml b/slf4j/pom.xml
 deleted file mode 100644
-index b7529bf3..00000000
+index 6d30d554..00000000
 --- a/slf4j/pom.xml
 +++ /dev/null
 @@ -1,35 +0,0 @@
@@ -579,7 +579,7 @@ index b7529bf3..00000000
 -
 -    <groupId>io.github.waterfallmc</groupId>
 -    <artifactId>waterfall-slf4j</artifactId>
--    <version>1.20-R0.2-SNAPSHOT</version>
+-    <version>1.20-R0.3-SNAPSHOT</version>
 -    <packaging>jar</packaging>
 -
 -    <name>Waterfall-SLF4J</name>
@@ -1629,5 +1629,5 @@ index 21a48df6..00000000
 -
 -}
 -- 
-2.43.0
+2.44.0.windows.1
 

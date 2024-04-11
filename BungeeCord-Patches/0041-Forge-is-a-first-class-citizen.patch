@@ -1,14 +1,14 @@
-From ab57199fa438d9abf524c233e569350ec2cfc6e3 Mon Sep 17 00:00:00 2001
+From 83a92fb024f00fe766b177ad48d88010fe203323 Mon Sep 17 00:00:00 2001
 From: Jamie Mansfield <dev@jamierocks.uk>
 Date: Mon, 28 May 2018 21:43:55 +0100
 Subject: [PATCH] Forge is a first class citizen
 
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-index d60bdeb0..0646684f 100644
+index 066e740d..f25ff75a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
 +++ b/proxy/src/main/java/net/md_5/bungee/BungeeCord.java
-@@ -290,8 +290,6 @@ public class BungeeCord extends ProxyServer
+@@ -293,8 +293,6 @@ public class BungeeCord extends ProxyServer
              registerChannel( ForgeConstants.FML_TAG );
              registerChannel( ForgeConstants.FML_HANDSHAKE_TAG );
              registerChannel( ForgeConstants.FORGE_REGISTER );
@@ -18,18 +18,19 @@ index d60bdeb0..0646684f 100644
  
          isRunning = true;
 diff --git a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-index 7094fe0b..8911bee8 100644
+index 37abb3c4..a468c5c4 100644
 --- a/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
 +++ b/proxy/src/main/java/net/md_5/bungee/conf/Configuration.java
-@@ -73,7 +73,7 @@ public abstract class Configuration implements ProxyConfig
+@@ -73,8 +73,8 @@ public abstract class Configuration implements ProxyConfig
      private Favicon favicon;
      private int compressionThreshold = 256;
      private boolean preventProxyConnections;
 -    private boolean forgeSupport;
+     private boolean rejectTransfers;
 +    private boolean forgeSupport = true; // Waterfall: default to enabled
  
      @Synchronized("serversLock") // Waterfall
      public void load()
 -- 
-2.43.0
+2.44.0.windows.1
 

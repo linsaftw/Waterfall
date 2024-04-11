@@ -1,14 +1,14 @@
-From 674e934b2caa424135b34c4b246962f8767a4009 Mon Sep 17 00:00:00 2001
+From 257e484cae6938465d9c727a29d790b822837e94 Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 2b4e4298..1fad0818 100644
+index 14ad2e71..fe6c7339 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-@@ -252,5 +252,9 @@ public abstract class AbstractPacketHandler
+@@ -277,5 +277,9 @@ public abstract class AbstractPacketHandler
      public void handle(net.md_5.bungee.protocol.packet.EntityRemoveEffect removeEffect) throws Exception
      {
      }
@@ -19,12 +19,12 @@ index 2b4e4298..1fad0818 100644
      // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 27d4c2c4..bd66e7a5 100644
+index 414d4578..3a69fced 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -496,6 +496,13 @@ public enum Protocol
-                     map( ProtocolConstants.MINECRAFT_1_19, 0x04 ),
-                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x05 )
+@@ -545,6 +545,13 @@ public enum Protocol
+                     map( ProtocolConstants.MINECRAFT_1_19_1, 0x05 ),
+                     map( ProtocolConstants.MINECRAFT_1_20_5, 0x06 )
              );
 +            // Waterfall start
 +            TO_SERVER.registerPacket(
@@ -76,10 +76,10 @@ index 00000000..08ecf2a3
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
-index 887ff29f..d4700090 100644
+index fb53ba74..f8e2db8d 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
-@@ -108,4 +108,9 @@ public class ClientCommand extends DefinedPacket
+@@ -118,4 +118,9 @@ public class ClientCommand extends DefinedPacket
      {
          handler.handle( this );
      }
@@ -90,15 +90,20 @@ index 887ff29f..d4700090 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 05e3bd21..dff5e283 100644
+index 3084e7e7..2cc0191a 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-@@ -194,10 +194,15 @@ public class UpstreamBridge extends PacketHandler
+@@ -196,7 +196,7 @@ public class UpstreamBridge extends PacketHandler
      @Override
      public void handle(ClientCommand command) throws Exception
      {
 -        handleChat( "/" + command.getCommand() );
 +        handleChat( "/" + command.getCommand(), command ); // Waterfall
+     }
+ 
+     @Override
+@@ -205,7 +205,12 @@ public class UpstreamBridge extends PacketHandler
+         handleChat( "/" + command.getCommand() );
      }
  
 -    private String handleChat(String message)
@@ -111,7 +116,7 @@ index 05e3bd21..dff5e283 100644
      {
          boolean empty = true;
          for ( int index = 0, length = message.length(); index < length; index++ )
-@@ -223,6 +228,12 @@ public class UpstreamBridge extends PacketHandler
+@@ -231,6 +236,12 @@ public class UpstreamBridge extends PacketHandler
              if ( !chatEvent.isCommand() || !bungee.getPluginManager().dispatchCommand( con, message.substring( 1 ) ) )
              {
                  return message;
@@ -125,5 +130,5 @@ index 05e3bd21..dff5e283 100644
          }
          throw CancelSendSignal.INSTANCE;
 -- 
-2.43.0
+2.44.0.windows.1
 
