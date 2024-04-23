@@ -1,4 +1,4 @@
-From a5f76a85a7ab7a4c5ac8a2280bce4a1b93063602 Mon Sep 17 00:00:00 2001
+From fb960e8c0e54f29fc650000f64df2e131a35bae9 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Mon, 14 Mar 2016 15:40:44 -0700
 Subject: [PATCH] Optimize uuid conversions
@@ -250,10 +250,10 @@ index e582808f..29cd91dd 100644
      }
  
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index d9247fb2..43fb3208 100644
+index 1d9a9ee5..616adcf1 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -788,7 +788,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -806,7 +806,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
      @Override
      public String getUUID()
      {

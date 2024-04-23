@@ -1,11 +1,11 @@
-From 257e484cae6938465d9c727a29d790b822837e94 Mon Sep 17 00:00:00 2001
+From 96d89a6957bc6dc891d8bab67efa1e30687d856e Mon Sep 17 00:00:00 2001
 From: Shane Freeder <theboyetronic@gmail.com>
 Date: Sun, 15 Oct 2023 00:36:38 +0100
 Subject: [PATCH] Prevent proxy commands from breaking the chat chain system
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
-index 14ad2e71..fe6c7339 100644
+index 33b246bc..7f5935c3 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/AbstractPacketHandler.java
 @@ -277,5 +277,9 @@ public abstract class AbstractPacketHandler
@@ -19,10 +19,10 @@ index 14ad2e71..fe6c7339 100644
      // Waterfall end
  }
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-index 414d4578..3a69fced 100644
+index 7a29eb0d..67e0f085 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/Protocol.java
-@@ -545,6 +545,13 @@ public enum Protocol
+@@ -546,6 +546,13 @@ public enum Protocol
                      map( ProtocolConstants.MINECRAFT_1_19_1, 0x05 ),
                      map( ProtocolConstants.MINECRAFT_1_20_5, 0x06 )
              );
@@ -76,10 +76,10 @@ index 00000000..08ecf2a3
 +    }
 +}
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
-index fb53ba74..f8e2db8d 100644
+index 887ff29f..d4700090 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/packet/ClientCommand.java
-@@ -118,4 +118,9 @@ public class ClientCommand extends DefinedPacket
+@@ -108,4 +108,9 @@ public class ClientCommand extends DefinedPacket
      {
          handler.handle( this );
      }
@@ -90,7 +90,7 @@ index fb53ba74..f8e2db8d 100644
 +    }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
-index 3084e7e7..2cc0191a 100644
+index 88ad9a4c..b8766545 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
 @@ -196,7 +196,7 @@ public class UpstreamBridge extends PacketHandler

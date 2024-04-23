@@ -1,4 +1,4 @@
-From 5b5a81ae874f531cc9eab80032218531ef99d75b Mon Sep 17 00:00:00 2001
+From b37e4d6c5c989c9361d83651fc34a1965875b6a4 Mon Sep 17 00:00:00 2001
 From: Techcable <Techcable@outlook.com>
 Date: Sun, 7 Feb 2016 00:01:19 -0700
 Subject: [PATCH] Add a property to accept invalid ping packets
@@ -9,10 +9,10 @@ You can enable it by setting '-Dwaterfall.acceptInvalidPackets=true' at the comm
 Fixes #23
 
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-index 4325fe23..b7dd5fe3 100644
+index 0fbe8b0d..deb9fef3 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
-@@ -323,10 +323,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+@@ -325,10 +325,14 @@ public class InitialHandler extends PacketHandler implements PendingConnection
          thisState = State.PING;
      }
  

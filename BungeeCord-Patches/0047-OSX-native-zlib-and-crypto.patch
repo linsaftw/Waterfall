@@ -1,18 +1,17 @@
-From bc847940495ff523e90196d7f6eaa7cfbed5e974 Mon Sep 17 00:00:00 2001
+From 81ae8ba8065f7f01bae1a9b2f2d37cd90f5fbcd8 Mon Sep 17 00:00:00 2001
 From: Colin Godsey <crgodsey@gmail.com>
 Date: Tue, 16 Apr 2019 07:25:52 -0600
 Subject: [PATCH] OSX native zlib and crypto
 
 
 diff --git a/native/compile-native.sh b/native/compile-native.sh
-index f37c9fdd..a50b52bf 100755
+index c342e782..0af5f481 100755
 --- a/native/compile-native.sh
 +++ b/native/compile-native.sh
-@@ -8,7 +8,16 @@ echo "Compiling mbedtls"
- echo "Compiling zlib"
+@@ -9,6 +9,16 @@ echo "Compiling zlib"
  (cd zlib && CFLAGS=-fPIC ./configure --static && make)
  
--CXX="g++ -shared -fPIC -Wl,--wrap=memcpy -O3 -Wall -Werror -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/"
+ CXX="g++ -shared -fPIC -O3 -Wall -Werror -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/"
 +# Waterfall - rewrite below to extend platform support
  
 -$CXX -Imbedtls/include src/main/c/NativeCipherImpl.cpp -o src/main/resources/native-cipher.so mbedtls/library/libmbedcrypto.a
@@ -29,39 +28,43 @@ index f37c9fdd..a50b52bf 100755
 +$CXX -Imbedtls/include src/main/c/NativeCipherImpl.cpp -o src/main/resources/${PREFIX:-}native-cipher.so mbedtls/library/libmbedcrypto.a $CXX_ARGS
 +$CXX -Izlib src/main/c/NativeCompressImpl.cpp -o src/main/resources/${PREFIX:-}native-compress.so zlib/libz.a $CXX_ARGS
 diff --git a/native/src/main/c/NativeCipherImpl.cpp b/native/src/main/c/NativeCipherImpl.cpp
-index 9de328ea..42fdb540 100644
+index cfe5f089..42fdb540 100644
 --- a/native/src/main/c/NativeCipherImpl.cpp
 +++ b/native/src/main/c/NativeCipherImpl.cpp
-@@ -5,10 +5,12 @@
+@@ -4,6 +4,14 @@
+ #include <mbedtls/aes.h>
  #include "net_md_5_bungee_jni_cipher_NativeCipherImpl.h"
  
- // Support for CentOS 6
++// Support for CentOS 6
 +#if __linux__ // Waterfall
- __asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
- extern "C" void *__wrap_memcpy(void *dest, const void *src, size_t n) {
-     return memcpy(dest, src, n);
- }
++__asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
++extern "C" void *__wrap_memcpy(void *dest, const void *src, size_t n) {
++    return memcpy(dest, src, n);
++}
 +#endif // Waterfall
- 
++
  typedef unsigned char byte;
  
+ struct crypto_context {
 diff --git a/native/src/main/c/NativeCompressImpl.cpp b/native/src/main/c/NativeCompressImpl.cpp
-index b490ede5..8fa0bd61 100644
+index 4b93a56a..8fa0bd61 100644
 --- a/native/src/main/c/NativeCompressImpl.cpp
 +++ b/native/src/main/c/NativeCompressImpl.cpp
-@@ -5,10 +5,12 @@
+@@ -4,6 +4,14 @@
+ #include <zlib.h>
  #include "net_md_5_bungee_jni_zlib_NativeCompressImpl.h"
  
- // Support for CentOS 6
++// Support for CentOS 6
 +#if __linux__ // Waterfall
- __asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
- extern "C" void *__wrap_memcpy(void *dest, const void *src, size_t n) {
-     return memcpy(dest, src, n);
- }
++__asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
++extern "C" void *__wrap_memcpy(void *dest, const void *src, size_t n) {
++    return memcpy(dest, src, n);
++}
 +#endif // Waterfall
- 
++
  typedef unsigned char byte;
  
+ static jfieldID consumedID;
 diff --git a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
 index 62bdaa0e..f4f6e6ab 100644
 --- a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
@@ -1215,5 +1218,5 @@ literal 0
 HcmV?d00001
 
 -- 
-2.43.0
+2.44.0.windows.1
 
