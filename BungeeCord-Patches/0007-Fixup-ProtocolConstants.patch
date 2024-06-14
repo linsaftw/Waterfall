@@ -1,14 +1,14 @@
-From b56f918c1ba3167e2d8ff9223afd830295e34717 Mon Sep 17 00:00:00 2001
+From d3093e6e77a840c31a9d064743bb06d0cac74987 Mon Sep 17 00:00:00 2001
 From: Troy Frew <fuzzy_bot@arenaga.me>
 Date: Tue, 15 Nov 2016 09:07:51 -0500
 Subject: [PATCH] Fixup ProtocolConstants
 
 
 diff --git a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-index 40045b77..c6ad1f54 100644
+index 82ef4c5d..ef45ea31 100644
 --- a/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
 +++ b/protocol/src/main/java/net/md_5/bungee/protocol/ProtocolConstants.java
-@@ -118,6 +118,16 @@ public class ProtocolConstants
+@@ -121,6 +121,16 @@ public class ProtocolConstants
          SUPPORTED_VERSION_IDS = supportedVersionIds.build();
      }
  
@@ -26,5 +26,5 @@ index 40045b77..c6ad1f54 100644
      {
  
 -- 
-2.44.0.windows.1
+2.45.1.windows.1
 

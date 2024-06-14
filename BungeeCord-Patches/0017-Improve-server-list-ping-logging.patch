@@ -1,0 +1,73 @@
+From 87f07bb36b0f0f65c0538ba4ca147ffda6d08515 Mon Sep 17 00:00:00 2001
+From: Janmm14 <computerjanimaus@yahoo.de>
+Date: Sat, 12 Dec 2015 23:43:30 +0100
+Subject: [PATCH] Improve server list ping logging
+
+This functionality of this patch was adopted upstream, however, this
+patch remains for a few misc improvements around here
+
+diff --git a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+index a25a493e..63920e7e 100644
+--- a/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
++++ b/proxy/src/main/java/net/md_5/bungee/ServerConnector.java
+@@ -522,6 +522,6 @@ public class ServerConnector extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + user.getName() + "] <-> ServerConnector [" + target.getName() + "]";
++        return "[" + user.getName() + "|" + user.getAddress() + "] <-> ServerConnector [" + target.getName() + "]";
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+index d408840d..cd3ed518 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
+@@ -790,6 +790,6 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
++        return "[" + con.getAddress() + "|" + con.getName() + "] <-> DownstreamBridge <-> [" + server.getInfo().getName() + "]";
+     }
+ }
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+index 616adcf1..0fbe8b0d 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/InitialHandler.java
+@@ -812,20 +812,7 @@ public class InitialHandler extends PacketHandler implements PendingConnection
+     @Override
+     public String toString()
+     {
+-        StringBuilder sb = new StringBuilder();
+-        sb.append( '[' );
+-
+-        String currentName = getName();
+-        if ( currentName != null )
+-        {
+-            sb.append( currentName );
+-            sb.append( ',' );
+-        }
+-
+-        sb.append( getSocketAddress() );
+-        sb.append( "] <-> InitialHandler" );
+-
+-        return sb.toString();
++        return "[" + getSocketAddress() + ( getName() != null ? "|" + getName() : "" ) + "] <-> InitialHandler";
+     }
+ 
+     @Override
+diff --git a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+index bfd5cb5f..2dafa4d9 100644
+--- a/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
++++ b/proxy/src/main/java/net/md_5/bungee/connection/UpstreamBridge.java
+@@ -396,6 +396,6 @@ public class UpstreamBridge extends PacketHandler
+     @Override
+     public String toString()
+     {
+-        return "[" + con.getName() + "] -> UpstreamBridge";
++        return "[" + con.getAddress() + "|" + con.getName() + "] -> UpstreamBridge";
+     }
+ }
+-- 
+2.45.1.windows.1
+
