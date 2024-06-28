@@ -1,38 +1,51 @@
-From 1953a977d054cf14c3cea5dc5641f49274b51b12 Mon Sep 17 00:00:00 2001
+From 5ea6ad7cd865bec92737ce8a665144ce1077c86e Mon Sep 17 00:00:00 2001
 From: Colin Godsey <crgodsey@gmail.com>
 Date: Tue, 16 Apr 2019 07:25:52 -0600
 Subject: [PATCH] OSX native zlib and crypto
 
 
 diff --git a/native/compile-native.sh b/native/compile-native.sh
-index c342e782..0af5f481 100755
+index 5b6e54c4..1ea919cc 100755
 --- a/native/compile-native.sh
 +++ b/native/compile-native.sh
-@@ -9,6 +9,16 @@ echo "Compiling zlib"
+@@ -8,20 +8,17 @@ echo "Compiling mbedtls"
+ echo "Compiling zlib"
  (cd zlib && CFLAGS=-fPIC ./configure --static && make)
  
- CXX="g++ -shared -fPIC -O3 -Wall -Werror -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/"
+-CC="gcc"
+-CFLAGS="-c -fPIC -O3 -Wall -Werror -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/"
+-LDFLAGS="-shared"
++CXX="gcc -shared -fPIC -O3 -Wall -Werror -I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/"
 +# Waterfall - rewrite below to extend platform support
  
--$CXX -Imbedtls/include src/main/c/NativeCipherImpl.cpp -o src/main/resources/native-cipher.so mbedtls/library/libmbedcrypto.a
--$CXX -Izlib src/main/c/NativeCompressImpl.cpp -o src/main/resources/native-compress.so zlib/libz.a
+-echo "Compiling bungee"
+-$CC $CFLAGS -o shared.o src/main/c/shared.c 
+-$CC $CFLAGS -Imbedtls/include -o NativeCipherImpl.o src/main/c/NativeCipherImpl.c
+-$CC $CFLAGS -Izlib -o NativeCompressImpl.o src/main/c/NativeCompressImpl.c
 +if [[ "$OSTYPE" == "darwin"* ]]; then
 +  PREFIX="osx-"
 +  CXX_ARGS="-I$JAVA_HOME/include/ -I$JAVA_HOME/include/darwin/"
 +else
 +  CXX_ARGS="-I$JAVA_HOME/include/ -I$JAVA_HOME/include/linux/ -Wl,--wrap=memcpy"
 +fi
-+
-+CXX="g++ -shared -fPIC -O3 -Wall -Werror"
-+
+ 
+-echo "Linking native-cipher.so"
+-$CC $LDFLAGS -o src/main/resources/native-cipher.so shared.o NativeCipherImpl.o mbedtls/library/libmbedcrypto.a
++CXX="gcc -shared -fPIC -O3 -Wall -Werror"
+ 
+-echo "Linking native-compress.so"
+-$CC $LDFLAGS -o src/main/resources/native-compress.so shared.o NativeCompressImpl.o zlib/libz.a
+-
+-echo "Cleaning up"
+-rm shared.o NativeCipherImpl.o NativeCompressImpl.o
 +$CXX -Imbedtls/include src/main/c/NativeCipherImpl.cpp -o src/main/resources/${PREFIX:-}native-cipher.so mbedtls/library/libmbedcrypto.a $CXX_ARGS
 +$CXX -Izlib src/main/c/NativeCompressImpl.cpp -o src/main/resources/${PREFIX:-}native-compress.so zlib/libz.a $CXX_ARGS
-diff --git a/native/src/main/c/NativeCipherImpl.cpp b/native/src/main/c/NativeCipherImpl.cpp
-index cfe5f089..42fdb540 100644
---- a/native/src/main/c/NativeCipherImpl.cpp
-+++ b/native/src/main/c/NativeCipherImpl.cpp
-@@ -4,6 +4,14 @@
- #include <mbedtls/aes.h>
+diff --git a/native/src/main/c/NativeCipherImpl.c b/native/src/main/c/NativeCipherImpl.c
+index 727a2f1f..a0b9319b 100644
+--- a/native/src/main/c/NativeCipherImpl.c
++++ b/native/src/main/c/NativeCipherImpl.c
+@@ -5,6 +5,14 @@
+ #include "shared.h"
  #include "net_md_5_bungee_jni_cipher_NativeCipherImpl.h"
  
 +// Support for CentOS 6
@@ -45,13 +58,13 @@ index cfe5f089..42fdb540 100644
 +
  typedef unsigned char byte;
  
- struct crypto_context {
-diff --git a/native/src/main/c/NativeCompressImpl.cpp b/native/src/main/c/NativeCompressImpl.cpp
-index 4b93a56a..8fa0bd61 100644
---- a/native/src/main/c/NativeCompressImpl.cpp
-+++ b/native/src/main/c/NativeCompressImpl.cpp
-@@ -4,6 +4,14 @@
- #include <zlib.h>
+ typedef struct crypto_context {
+diff --git a/native/src/main/c/NativeCompressImpl.c b/native/src/main/c/NativeCompressImpl.c
+index 7fb8e6b9..64402246 100644
+--- a/native/src/main/c/NativeCompressImpl.c
++++ b/native/src/main/c/NativeCompressImpl.c
+@@ -5,6 +5,14 @@
+ #include "shared.h"
  #include "net_md_5_bungee_jni_zlib_NativeCompressImpl.h"
  
 +// Support for CentOS 6
@@ -64,7 +77,7 @@ index 4b93a56a..8fa0bd61 100644
 +
  typedef unsigned char byte;
  
- static jfieldID consumedID;
+ static jclass classID;
 diff --git a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java b/native/src/main/java/net/md_5/bungee/jni/NativeCode.java
 index 62bdaa0e..f4f6e6ab 100644
 --- a/native/src/main/java/net/md_5/bungee/jni/NativeCode.java

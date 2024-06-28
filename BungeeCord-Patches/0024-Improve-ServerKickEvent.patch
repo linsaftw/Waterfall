@@ -1,4 +1,4 @@
-From ca8d1499412759331247d9b4ce9497090bd9f749 Mon Sep 17 00:00:00 2001
+From 563bd03606a290b8321f36934b12c57902909530 Mon Sep 17 00:00:00 2001
 From: Nathan Poirier <nathan@poirier.io>
 Date: Tue, 28 Jun 2016 23:00:49 -0500
 Subject: [PATCH] Improve ServerKickEvent
@@ -81,7 +81,7 @@ index 63920e7e..e10f33ad 100644
          {
              // Pre cancel the event if we are going to try another server
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index cd3ed518..d4036c5d 100644
+index 1c075a9f..23c34eff 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 @@ -98,16 +98,19 @@ public class DownstreamBridge extends PacketHandler
@@ -96,7 +96,7 @@ index cd3ed518..d4036c5d 100644
          {
              server.setObsolete( true );
 -            con.connectNow( def, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
--            con.sendMessage( bungee.getTranslation( "server_went_down" ) );
+-            con.sendMessage( bungee.getTranslation( "server_went_down", def.getName() ) );
 -        } else
 +            con.connectNow( event.getCancelServer(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
 +        }
@@ -109,11 +109,20 @@ index cd3ed518..d4036c5d 100644
      }
  
      @Override
-@@ -122,7 +125,19 @@ public class DownstreamBridge extends PacketHandler
+@@ -129,16 +132,27 @@ public class DownstreamBridge extends PacketHandler
+             return;
+         }
  
-         if ( !server.isObsolete() )
-         {
+-        ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
+-        if ( def != null )
+-        {
+-            server.setObsolete( true );
+-            con.connectNow( def, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
+-            con.sendMessage( bungee.getTranslation( "server_went_down", def.getName() ) );
+-        } else
+-        {
 -            con.disconnect( bungee.getTranslation( "lost_connection" ) );
+-        }
 +            // Waterfall start
 +            ServerInfo def = con.updateAndGetNextServer( server.getInfo() );
 +            ServerKickEvent event = bungee.getPluginManager().callEvent( new ServerKickEvent( con, server.getInfo(), TextComponent.fromLegacyText( bungee.getTranslation( "lost_connection" ) ), def, ServerKickEvent.State.CONNECTED, ServerKickEvent.Cause.LOST_CONNECTION ) );
@@ -124,13 +133,21 @@ index cd3ed518..d4036c5d 100644
 +            }
 +            else
 +            {
-+                con.disconnect0( event.getReason() );
++                if ( def != null )
++                {
++                    server.setObsolete( true );
++                    con.connectNow( def, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT );
++                    con.sendMessage( bungee.getTranslation( "server_went_down", def.getName() ) );
++                } else
++                {
++                    con.disconnect0( event.getReason() );
++                }
 +            }
 +            // Waterfall end
-         }
+     }
  
-         ServerDisconnectEvent serverDisconnectEvent = new ServerDisconnectEvent( con, server.getInfo() );
-@@ -633,10 +648,14 @@ public class DownstreamBridge extends PacketHandler
+     @Override
+@@ -645,10 +659,14 @@ public class DownstreamBridge extends PacketHandler
      public void handle(Kick kick) throws Exception
      {
          ServerInfo def = con.updateAndGetNextServer( server.getInfo() );

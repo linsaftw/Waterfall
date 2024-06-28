@@ -1,4 +1,4 @@
-From 87f07bb36b0f0f65c0538ba4ca147ffda6d08515 Mon Sep 17 00:00:00 2001
+From f85ac2fff95f74a284ba4054e73d186d384c0bad Mon Sep 17 00:00:00 2001
 From: Janmm14 <computerjanimaus@yahoo.de>
 Date: Sat, 12 Dec 2015 23:43:30 +0100
 Subject: [PATCH] Improve server list ping logging
@@ -19,10 +19,10 @@ index a25a493e..63920e7e 100644
      }
  }
 diff --git a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-index d408840d..cd3ed518 100644
+index b501f7bd..1c075a9f 100644
 --- a/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
 +++ b/proxy/src/main/java/net/md_5/bungee/connection/DownstreamBridge.java
-@@ -790,6 +790,6 @@ public class DownstreamBridge extends PacketHandler
+@@ -802,6 +802,6 @@ public class DownstreamBridge extends PacketHandler
      @Override
      public String toString()
      {
